@@ -8,15 +8,27 @@ api_error <- function(message, status) {
 
 error_handler <- function(req, res, err) {
     if (!inherits(err, "api_error")) {
-        # log_error("{500} {convert_empty(err$message)}") # nolint
-        print(err$message)
+        log_error("{500} {convert_empty(err$message)}") # nolint
         res$status <- 500
-        body <- list(message = "Internal server error")
+        body <- list(
+            code = 500,
+            message = "Internal server error"
+        )
     } else {
-        # log_error("{err$status} {convert_empty(err$message)}") # nolint
-        print(err$message)
+        log_error("{err$status} {convert_empty(err$message)}") # nolint
         res$status <- err$status
-        body <- list(message = err$message)
+        body <- list(
+            code = err$status,
+            message = err$message
+        )
     }
     return(body)
+}
+
+bad_request <- function(message = "Somethings wrong") {
+    return(api_error(message = message, status = 400))
+}
+
+not_found <- function(message = "Resource Not Found") {
+    return(api_error(message = message, status = 404))
 }
