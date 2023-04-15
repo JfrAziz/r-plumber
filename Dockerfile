@@ -21,6 +21,8 @@ RUN install2.r --error --skipinstalled --ncpus -1 \
 ARG PLUMBER_REF=main
 RUN Rscript -e "remotes::install_github('rstudio/plumber@${PLUMBER_REF}')"
 
+RUN Rscript -e "install.packages(c('logger','tictoc', 'fs'))"
+
 # setup workspace
 COPY . /app
 
