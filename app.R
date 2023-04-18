@@ -3,6 +3,7 @@ library(plumber)
 # load required helpers
 source("./helpers/error.R")
 source("./helpers/logging.R")
+source("./helpers/validator.R")
 
 # App initialization and settings for warning, trailing slash
 app <- pr()
@@ -24,4 +25,4 @@ for (file_name in r_routes_file_names) {
 
 # # run plumber
 app %>%
-  pr_run(port = 8000)
+  pr_run(host = '0.0.0.0' ,port = 8000)

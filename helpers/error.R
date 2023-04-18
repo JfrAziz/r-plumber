@@ -8,7 +8,7 @@ api_error <- function(message, status) {
 
 error_handler <- function(req, res, err) {
     if (!inherits(err, "api_error")) {
-        log_error("{500} {convert_empty(err$message)}") # nolint
+        log_error("500 {convert_empty(err$message)}") # nolint
         res$status <- 500
         body <- list(
             code = 500,
