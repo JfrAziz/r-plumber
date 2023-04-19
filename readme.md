@@ -12,7 +12,8 @@ This repository is a boilerplate to setup a new project with R plumber. You can 
 | Dynamic Filter/Miiddleware |   Not Yet   | Add custom filter / middleware each mounted route from `routes` dir                                                                                                                  |
 | Request Validation         |     ✅      | Simple validation mechanism to check incoming request from request body / params, such as required fields, check type (number, boolean, array), check the value in given array, etc. |
 | Docker                     |     ✅      | Simplifying apps with docker, for better development, deployment, dependencies management, and scaling                                                                               |
-| Multiprocessing            |   Not Yet   | R only run a request at a time, make it multiple processing with `promises` and `future` packages.
+| Multiprocessing            |   Not Yet   | R only run a request at a time, make it multiple processing with `promises` and `future` packages.                                                                                   |
+| Testing                    |   Not Yet   | Test the endpoint with `testthat` package                                                                                                                                            |
 
 ## How to use it
 
@@ -21,7 +22,7 @@ To use this templates, you must have Docker installed, I am prefer using docker 
 ```bash
 docker build -t "r-plumber:latest" .
 
-docker run -d --name "r-plumber" -e "HOST=0.0.0.0" -p 8000:8000 r-plumber:latest 
+docker run -d --name "r-plumber" -e "HOST=0.0.0.0" -p 8000:8000 r-plumber:latest
 ```
 
 > Note that, if you made changes to your project, you must restart the container or running it again.
@@ -53,7 +54,7 @@ And this will generate `GET /example-route/` and `GET /example-route/hello` endp
 
 ### Request Validation
 
-We validate the request using custom function from [`helpers/validator.R`](./helpers/validator.R), you can take a look to the example in this endpoint  [`routes/validation.R`](./routes/validation.R)
+We validate the request using custom function from [`helpers/validator.R`](./helpers/validator.R), you can take a look to the example in this endpoint [`routes/validation.R`](./routes/validation.R)
 
 ## Last...
 
