@@ -1,7 +1,6 @@
-ARG R_VERSION=latest
-FROM rocker/r-ver:${R_VERSION}
+FROM rocker/r-ver:latest
 
-# install dependency
+# install os dependencies
 RUN apt-get update -qq
 RUN apt-get install -y --no-install-recommends \
   git-core \
@@ -12,16 +11,14 @@ RUN apt-get install -y --no-install-recommends \
   libxml2-dev \
   && rm -rf /var/lib/apt/lists/*
 
-# install R packages
-RUN install2.r --error --skipinstalled --ncpus -1 \
-  remotes \
-  && rm -rf /tmp/downloaded_packages
+# install pak alternatives to install.packages
+RUN Rscript -e "install.packages('pak', repos = sprintf('https://r-lib.github.io/p/pak/stable'))"
 
-# install r-plumber
-ARG PLUMBER_REF=main
-RUN Rscript -e "remotes::install_github('rstudio/plumber@${PLUMBER_REF}')"
+# install latest plumber from github main branch
+RUN Rscript -e "pak::pkg_install('rstudio/plumber@main')"
 
-RUN Rscript -e "install.packages(c('logger','tictoc', 'fs'))"
+# install other R packages
+RUN Rscript -e "pak::pkg_install(c('logger','tictoc', 'fs'))"
 
 # setup workspace
 COPY . /app

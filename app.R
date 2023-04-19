@@ -5,6 +5,10 @@ source("./helpers/error.R")
 source("./helpers/logging.R")
 source("./helpers/validator.R")
 
+# load env variables
+host <- Sys.getenv("HOST", "127.0.0.1")
+port <- strtoi(Sys.getenv("PORT", 8000))
+
 # App initialization and settings for warning, trailing slash
 app <- pr()
 options(warn = -1)
@@ -22,7 +26,6 @@ for (file_name in r_routes_file_names) {
     pr_mount(routeName, pr(file_name) %>% pr_set_error(error_handler))
 }
 
-
-# # run plumber
+# run plumber
 app %>%
-  pr_run(host = '0.0.0.0' ,port = 8000)
+  pr_run(host = host,port = port)

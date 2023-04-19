@@ -1,3 +1,14 @@
+#* Get Iris Dataset
+#* @serializer unboxedJSON
+#* @get /iris
+function(req, res) {
+  return(
+    list(
+      data = iris
+    )
+  )
+}
+
 #* Test Post Param With Validation
 #* @serializer unboxedJSON
 #* @post /validate
