@@ -2,70 +2,73 @@
 #* @serializer unboxedJSON
 #* @get /iris
 function(req, res) {
-  return(
-    list(
-      data = iris
-    )
-  )
+  return(list(data = iris))
 }
 
-#* Test Post Param With Validation
+#* Return the columns of data
 #* @serializer unboxedJSON
-#* @post /validate
-function(req, res) {
-  # check all the parameters exist in
-  # request body
-  checkRequired(req$body, c(
-    "boolean",
-    "max_number",
-    "number_value",
-    "in_array",
-    "formula",
-    "number_list",
-    "with_null_list",
-    "data"
-  ))
+#* @post /columns
+function(res, req) {
+  checkRequired(req$body, c("data"))
 
-  # now validate all the params one by one.
-
-  # check the boolean params is truly a boolean
-  # TRUE, TrUe, false, 0, 1 is acceptable
-  boolVar <- checkBoolean(req$body$boolean)
-
-  # check numeric value and maximum value.
-  # before set the maximum value, we need to 
-  # validate if the params is a number
-  numberVar <- checkNumber(req$body$number_value, "number_value")
-  maxNumberVar <- setMaxNumber(checkNumber(req$body$max_number, "max_number"), 50)
-
-  # the value must exist in the given array
-  inArrayVar <- checkInArray(req$body$in_array, c('setosa', 'versicolor', 'virginica'))
-
-  # the value must be a R formula format
-  formulaVar <- checkFormula(req$body$formula, "Formula")
-
-  # check the value is an array
-  numberListVar <- checkArray(req$body$number_list, "number_list")
-
-  # sanitize the value to an array and remove the 
-  # NULL value.
-  withNullListVar <- checkVector(req$body$with_null_list)
+  reqData <- checkData(req$body$data)
   
-  # check the values is a data, which is a array of object in
-  # json. 
-  dataVar <- checkData(req$body$data, "data")
+  return(list(
+    message = "column from data",
+    data = colnames(reqData)
+  ))
+}
 
-  # now you can use all the request params safely
-  # for your need. in this example, I just return it back
+#* Filter a data by columns name
+#* @serializer unboxedJSON
+#* @post /select
+function(res, req) {
+  checkRequired(req$body, c("data", "columns"))
+  
+  reqData <- checkData(req$body$data)
+  
+  columns <- checkArray(req$body$columns, "columns")
+
+  colomnsOfReqData <- colnames(reqData)
+
+  for (i in seq_along(columns)) {
+    checkInArray(columns[i], colomnsOfReqData)
+  }
 
   return(list(
-    boolean = boolVar,
-    max_number = maxNumberVar,
-    number_value = numberVar,
-    in_array = inArrayVar,
-    formula = deparse1(formulaVar),
-    number_list = numberListVar,
-    with_null_list = withNullListVar,
-    data = dataVar
+    message = "filtered data",
+    data = reqData[columns]
+  ))
+}
+
+#* Merge or join 2 data by a column
+#* @serializer unboxedJSON
+#* @post /join
+function(res, req) {
+  checkRequired(req$body, c("data_x", "data_y", "by"))
+    
+  data_x <- checkData(req$body$data_x)
+  
+  data_y <- checkData(req$body$data_y)
+
+  byColumn <- req$body$by
+
+  return(list(
+    message = "merged data",
+    data = merge(x = data_x, y = data_y, by = byColumn)
+  ))
+}
+
+#* Return summary data from psych package, data contain n, mean, sd, min, max, range, and se
+#* @serializer unboxedJSON
+#* @post /summary
+function(res, req) {
+  checkRequired(req$body, c("data"))
+
+  reqData <- checkData(req$body$data)
+  
+  return(list(
+      message = "summary data from psych package",
+      data = psych::describe(reqData, fast = TRUE)
   ))
 }

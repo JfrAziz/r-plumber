@@ -18,7 +18,7 @@ RUN Rscript -e "install.packages('pak', repos = sprintf('https://r-lib.github.io
 RUN Rscript -e "pak::pkg_install('rstudio/plumber@main')"
 
 # install other R packages
-RUN Rscript -e "pak::pkg_install(c('logger','tictoc', 'fs'))"
+RUN Rscript -e "pak::pkg_install(c('logger','tictoc', 'fs', 'psych'))"
 
 # setup workspace
 COPY . /app
