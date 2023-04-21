@@ -6,8 +6,8 @@ source("./helpers/logging.R")
 source("./helpers/validator.R")
 
 # load env variables
-host <- Sys.getenv("HOST", "127.0.0.1")
-port <- strtoi(Sys.getenv("PORT", 8000))
+HOST <- Sys.getenv("HOST", "127.0.0.1")
+PORT <- strtoi(Sys.getenv("PORT", 8000))
 
 # App initialization and settings for warning, trailing slash
 app <- pr()
@@ -28,4 +28,4 @@ for (file_name in r_routes_file_names) {
 
 # run plumber
 app %>%
-  pr_run(host = host,port = port)
+  pr_run(host = HOST, port = PORT)

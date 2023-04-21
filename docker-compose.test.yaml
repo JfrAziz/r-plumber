@@ -1,0 +1,33 @@
+version: '3'
+
+networks:
+  r-plumber-networks:
+    name: r-plumber-networks
+
+services:
+  api:
+    build: .
+    container_name: r-plumber
+    command: app.R > /dev/null 2>&1
+    volumes:
+      - ./:/app
+    environment:
+      - HOST=0.0.0.0
+      - PORT=8000
+    networks:
+      - r-plumber-networks
+
+  test:
+    build: .
+    container_name: r-plumber-test
+    command: test.R
+    volumes:
+      - ./:/app
+    depends_on:
+      - api
+    environment:
+      - WAIT_TIME=5
+      - HOST=api
+      - PORT=8000
+    networks:
+      - r-plumber-networks

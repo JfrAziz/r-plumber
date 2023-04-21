@@ -1,9 +1,9 @@
 version: '3'
 
 services:
-  rplumber:
+  api:
     build: .
-    container_name: rplumber
+    container_name: api
     volumes:
       - ./:/app
     environment:

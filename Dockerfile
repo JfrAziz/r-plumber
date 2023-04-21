@@ -1,4 +1,4 @@
-FROM rocker/r-ver:latest
+FROM rocker/r-ver:4.3
 
 # install os dependencies
 RUN apt-get update -qq
@@ -8,6 +8,7 @@ RUN apt-get install -y --no-install-recommends \
   libcurl4-gnutls-dev \
   curl \
   libsodium-dev \
+  libz-dev \
   libxml2-dev \
   && rm -rf /var/lib/apt/lists/*
 
@@ -17,8 +18,14 @@ RUN Rscript -e "install.packages('pak', repos = sprintf('https://r-lib.github.io
 # install latest plumber from github main branch
 RUN Rscript -e "pak::pkg_install('rstudio/plumber@main')"
 
-# install other R packages
-RUN Rscript -e "pak::pkg_install(c('logger','tictoc', 'fs', 'psych'))"
+# install required R packages
+RUN Rscript -e "pak::pkg_install(c('logger','tictoc', 'fs'))"
+
+# install testing packages
+RUN Rscript -e "pak::pkg_install(c('testthat', 'httr'))"
+
+# install additional R packages
+RUN Rscript -e "pak::pkg_install(c('psych'))"
 
 # setup workspace
 COPY . /app
