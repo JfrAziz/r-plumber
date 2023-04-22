@@ -4,16 +4,16 @@
 
 This repository is a boilerplate to setup a new project with R plumber. You can use or customize the code provided in this repository for your own purposes. The features included in this templates are:
 
-| Features                   | Implemented | Description                                                                                                                                                                          |
-| -------------------------- | :---------: | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Logging                    |     ✅      | Better way to log any incoming request to stdout and file with `logger` package                                                                                                      |
-| Error Handling             |     ✅      | Proper & simple error handling with custom HTTP Response code                                                                                                                        |
-| File Based Routing         |     ✅      | Auto mount route file from `routes` dir with file name based endpoint                                                                                                                |
-| Dynamic Filter/Miiddleware |   Not Yet   | Add custom filter / middleware each mounted route from `routes` dir                                                                                                                  |
-| Request Validation         |     ✅      | Simple validation mechanism to check incoming request from request body / params, such as required fields, check type (number, boolean, array), check the value in given array, etc. |
-| Docker                     |     ✅      | Simplifying apps with docker, for better development, deployment, dependencies management, and scaling                                                                               |
-| Multiprocessing            |   Not Yet   | R only run a request at a time, make it multiple processing with `promises` and `future` packages.                                                                                   |
-| Testing                    |   Not Yet   | Test the endpoint with `testthat` package                                                                                                                                            |
+| Features                   | Implemented | Description                                                                                                                                                                                                |
+| -------------------------- | :---------: | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Logging                    |     ✅      | Better way to log any incoming request to stdout and file with `logger` package                                                                                                                            |
+| Error Handling             |     ✅      | Proper & simple error handling with custom HTTP Response code                                                                                                                                              |
+| File Based Routing         |     ✅      | Auto mount route file from `routes` dir with file name based endpoint                                                                                                                                      |
+| Dynamic Filter/Miiddleware |   Not Yet   | Add custom filter / middleware each mounted route from `routes` dir                                                                                                                                        |
+| Request Validation         |     ✅      | Simple validation mechanism to check incoming request from request body / params, such as required fields, check type (number, boolean, array), check the value in given array, etc.                       |
+| Docker                     |     ✅      | Simplifying apps with docker, for better development, deployment, dependencies management, and scaling                                                                                                     |
+| Multiprocessing            |   Not Yet   | R only run a request at a time, make it multiple processing with `promises` and `future` packages.                                                                                                         |
+| Testing                    |     ✅      | Testing for endpoints / routes and helper functions with `testthat` and `httr` packages, also use Docker and docker-compose for setting up automated testing. For running in CI / CD, an example also provided. |
 
 ## How to use it
 
@@ -55,6 +55,18 @@ And this will generate `GET /example-route/` and `GET /example-route/hello` endp
 ### Request Validation
 
 We validate the request using custom function from [`helpers/validator.R`](./helpers/validator.R), you can take a look to the example in this endpoint [`routes/validation.R`](./routes/validation.R)
+
+### Testing
+
+This project use another approach to run testing with `testthat` package. `testthat` used to test R packages, but we used in this project for running the test manually with help of docker and docker-compose. In [`docker-compose.test.yaml`](./docker-compose.test.yaml) we setup 2 services, the API and the test, both using the same docker images. First we run the API then the test. To run this, use this command so after the test completed all the container will be stopped.
+
+```bash
+docker compose -f "docker-compose.test.yaml" up  --abort-on-container-exit --exit-code-from test --attach test
+```
+
+For running this in CI / CD, an example is provided in this [github-actions](./.github/workflows/test.yml). The result of this test will be printed out in docker-logs
+
+Some of the examples of test case can be found in the form of `test-*.R` files in `test` directory. You can create your own test cases by creating the `test-*.R` files in that directory and follow the [`testthat` documentations](https://testthat.r-lib.org). Note that, `test` prefix is required in file name and the files cannot be located in the subdirectory as `testthat` does not support it yet.
 
 ## Deploy
 

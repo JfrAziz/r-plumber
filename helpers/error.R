@@ -25,10 +25,14 @@ error_handler <- function(req, res, err) {
     return(body)
 }
 
+# Custom error handler for HTTP Response code
+
+# 400 BAD REQUEST
 bad_request <- function(message = "Somethings wrong") {
     return(api_error(message = message, status = 400))
 }
 
+# 404 NOT FOUND
 not_found <- function(message = "Resource Not Found") {
     return(api_error(message = message, status = 404))
 }

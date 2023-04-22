@@ -37,21 +37,36 @@ checkVector <- function(data = c()) {
 # check the value is string and is in formula format
 # e.g y~x1+x2 etc, and return it as a R formula. throw error otherwise
 checkFormula <- function(formula, attributeName = "formula") {
-    return(tryCatch(as.formula(formula),
-        error = function(error) bad_request(paste0(attributeName, " is not valid, example: y~x1+x2..."))
-    ))
+    tryCatch({
+        parsedValue <- as.formula(formula)
+        
+        if (!inherits(parsedValue, "formula")) stop("not valid formula")
+
+        if (length(parsedValue) == 0) stop("not valid formula")
+        
+        return(parsedValue)
+    },
+    error = function(error) bad_request(paste0(attributeName, " is not valid, example: y~x1+x2..."))
+    )
 }
 
 # check the value is a number or numeric, give back the value.
 # throw error if the value is not a number
 checkNumber <- function(value, attributeName = "number") {
-    if (!is.numeric(value)) bad_request(paste0(attributeName, " is not number"))
-    return(value)
+    if (length(value) == 0) bad_request(paste0(attributeName, " is not number"))
+
+    parsedValue <- as.numeric(value)
+
+    if (!is.numeric(parsedValue) || is.na(parsedValue)) bad_request(paste0(attributeName, " is not number"))
+    
+    return(parsedValue)
 }
 
 # check if the value exist in the given array.
 # example is 3 exist in [3,4,5,6]?
 checkInArray <- function(value, array) {
+    if (length(value) != 1) bad_request(paste0(value, " is not single value"))
+
     if (!(value %in% array)) bad_request(paste0(value, " is not in: ", paste0(array, collapse = ", ")))
     return(value)
 }
