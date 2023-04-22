@@ -4,15 +4,15 @@
 
 This repository is a boilerplate to setup a new project with R plumber. You can use or customize the code provided in this repository for your own purposes. The features included in this templates are:
 
-| Features                   | Implemented | Description                                                                                                                                                                                                |
-| -------------------------- | :---------: | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Logging                    |     ✅      | Better way to log any incoming request to stdout and file with `logger` package                                                                                                                            |
-| Error Handling             |     ✅      | Proper & simple error handling with custom HTTP Response code                                                                                                                                              |
-| File Based Routing         |     ✅      | Auto mount route file from `routes` dir with file name based endpoint                                                                                                                                      |
-| Dynamic Filter/Miiddleware |   Not Yet   | Add custom filter / middleware each mounted route from `routes` dir                                                                                                                                        |
-| Request Validation         |     ✅      | Simple validation mechanism to check incoming request from request body / params, such as required fields, check type (number, boolean, array), check the value in given array, etc.                       |
-| Docker                     |     ✅      | Simplifying apps with docker, for better development, deployment, dependencies management, and scaling                                                                                                     |
-| Multiprocessing            |   Not Yet   | R only run a request at a time, make it multiple processing with `promises` and `future` packages.                                                                                                         |
+| Features                   | Implemented | Description                                                                                                                                                                                                     |
+| -------------------------- | :---------: | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Logging                    |     ✅      | Better way to log any incoming request to stdout and file with `logger` package                                                                                                                                 |
+| Error Handling             |     ✅      | Proper & simple error handling with custom HTTP Response code                                                                                                                                                   |
+| File Based Routing         |     ✅      | Auto mount route file from `routes` dir with file name based endpoint                                                                                                                                           |
+| Dynamic Filter/Miiddleware |     ✅      | Add custom filter / middleware each mounted route from `routes` dir                                                                                                                                             |
+| Request Validation         |     ✅      | Simple validation mechanism to check incoming request from request body / params, such as required fields, check type (number, boolean, array), check the value in given array, etc.                            |
+| Docker                     |     ✅      | Simplifying apps with docker, for better development, deployment, dependencies management, and scaling                                                                                                          |
+| Multiprocessing            |   Not Yet   | R only run a request at a time, make it multiple processing with `promises` and `future` packages.                                                                                                              |
 | Testing                    |     ✅      | Testing for endpoints / routes and helper functions with `testthat` and `httr` packages, also use Docker and docker-compose for setting up automated testing. For running in CI / CD, an example also provided. |
 
 ## How to use it
@@ -29,7 +29,7 @@ docker run -d --name "r-plumber" -e "HOST=0.0.0.0" -p 8000:8000 r-plumber:latest
 
 ### Routing
 
-To create a new route or endpoint, just create a `*.R` file in `routes` dir with `roxygen2` like comment or annotation like this.
+I am using the term `route` for the `*.R` files in `routes` dir, and `enpoint` for any function inside it. To create a new route or endpoint, just create a `*.R` file in `routes` dir with `roxygen2` like comment or annotation like this.
 
 ```r
 # routes/example-route.R
@@ -50,7 +50,26 @@ function(msg="") {
 }
 ```
 
-And this will generate `GET /example-route/` and `GET /example-route/hello` endpoint. Read more about it from the [docs](https://www.rplumber.io/)
+And this will generate `GET /example-route/` and `GET /example-route/hello` endpoints. Read more about it from the [docs](https://www.rplumber.io/)
+
+### Filter or Middleware
+
+Middleware or Filter is the "same term" to describe something in beetween before the request come to controller. To use filter, add this following code to your routes.
+
+```r
+# routes/custom-filter/enable.R
+
+#* @plumber
+function(pr) {
+  pr %>%
+    pr_filter("custom-filter", function(req, res) {
+      log_info("CUSTOM FILTER CALLED")
+      plumber::forward()
+    })
+}
+```
+
+The second params is your filter function, you can create it directly or create global function in helpers (but don't forget to import it). Now any endpoint in `/routes/custom-filter/enable.R` will run the filter function, but the other routes doesn't. By using this method, we can use filter as many as we need for each routes. 
 
 ### Request Validation
 
