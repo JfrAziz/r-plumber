@@ -12,8 +12,16 @@ This repository is a boilerplate to setup a new project with R plumber. You can 
 | Dynamic Filter/Miiddleware |     ✅      | Add custom filter / middleware each mounted route from `routes` dir                                                                                                                                             |
 | Request Validation         |     ✅      | Simple validation mechanism to check incoming request from request body / params, such as required fields, check type (number, boolean, array), check the value in given array, etc.                            |
 | Docker                     |     ✅      | Simplifying apps with docker, for better development, deployment, dependencies management, and scaling                                                                                                          |
-| Multiprocessing            |   Not Yet   | R only run a request at a time, make it multiple processing with `promises` and `future` packages.                                                                                                              |
+| Parallel Processing        |   Not Yet   | R only run a request at a time, make it process in parallel with `promises` and `future` packages.                                                                                                              |
 | Testing                    |     ✅      | Testing for endpoints / routes and helper functions with `testthat` and `httr` packages, also use Docker and docker-compose for setting up automated testing. For running in CI / CD, an example also provided. |
+
+This template comes with built in Environment Variables that you can edit when running it.
+
+| ENV      |   Default   | Description                                                                                    |
+| -------- | :---------: | ---------------------------------------------------------------------------------------------- |
+| `HOST`   | `127.0.0.1` | Host to run Rplumber, use `0.0.0.0` when running it in Docker                                  |
+| `PORT`   |   `8000`    | Which port Rplumber will run                                                                   |
+| `WORKERS` |     `3`     | Number of worker (Rsession) to run parallel processing in Rplumber (including the main worker) |
 
 ## How to use it
 
@@ -69,11 +77,65 @@ function(pr) {
 }
 ```
 
-The second params is your filter function, you can create it directly or create global function in helpers (but don't forget to import it). Now any endpoint in `/routes/custom-filter/enable.R` will run the filter function, but the other routes doesn't. By using this method, we can use filter as many as we need for each routes. 
+The second params is your filter function, you can create it directly or create global function in helpers (but don't forget to import it). Now any endpoint in `/routes/custom-filter/enable.R` will run the filter function, but the other routes doesn't. By using this method, we can use filter as many as we need for each routes.
 
 ### Request Validation
 
 We validate the request using custom function from [`helpers/validator.R`](./helpers/validator.R), you can take a look to the example in this endpoint [`routes/validation.R`](./routes/validation.R)
+
+### Parallel Processing
+
+Parallel processing in Rplumber use `future` and `promises` packages, that package will process incoming request in another Rsession called worker.
+
+```mermaid
+%%{init: {'theme': 'base', 'themeVariables': { 'fontSize': '10px', 'fontFamily': 'Mono'}}}%%
+
+graph LR
+
+subgraph bi[ ]
+    B[Request]
+end
+
+subgraph vpc[Docker]
+    subgraph 1[R Plumber API]
+            MAIN -.-> WORKER1
+            MAIN -.-> WORKER2
+            MAIN -.-> WORKER3
+        subgraph inside[R Plumber Session]
+            MAIN[Main Worker]
+            B --> MAIN
+        end
+
+        subgraph parallel[Parallel]
+            WORKER1(Worker 1)
+            WORKER2(Worker 2)
+            WORKER3(Worker 3)
+        end
+    end
+end
+
+linkStyle 0 stroke:#555,stroke-width:0.5px
+linkStyle 1 stroke:#555,stroke-width:0.5px
+linkStyle 2 stroke:#555,stroke-width:0.5px
+linkStyle 3 stroke:#555,stroke-width:0.5px
+```
+
+Use this method for long process endpoints that takes too much time, so the API can continue processing incoming requests even while working on others. You can add to any endpoint like this
+
+```r
+# routes/task.R
+
+#* slow endpoint with promise
+#* @serializer unboxedJSON
+#* @get /slow-with-promise
+function(req, res) {
+  future_promise({
+    # your long procesing task
+    Sys.sleep(10)
+    return(list(message = "Slow with promise endpoint"))
+  })
+}
+```
 
 ### Testing
 
