@@ -1,4 +1,5 @@
 library(future)
+library(promises)
 
 future::plan(future::multisession(workers = WORKERS))
 

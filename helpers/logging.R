@@ -6,10 +6,10 @@ log_dir <- "logs"
 if (!fs::dir_exists(log_dir)) fs::dir_create(log_dir)
 log_appender(appender_tee(tempfile(paste0("plumber_", Sys.time(), "_"), log_dir, ".log")))
 
-convert_empty <- function(string) {
-  if (string == "") {
-    return("-")
-  }
+# transoform empty value to -
+convert_empty <- function(string = "") {
+  if (is.null(string)) return("-")
+  if (string == "") return("-")
   return(string)
 }
 
@@ -19,5 +19,14 @@ pre_route_logging <- function(req) {
 
 post_route_logging <- function(req, res) {
   end <- tictoc::toc(quiet = TRUE) # nolint
-  log_info('{convert_empty(req$REMOTE_ADDR)} "{convert_empty(req$HTTP_USER_AGENT)}" {convert_empty(req$HTTP_HOST)} {convert_empty(req$REQUEST_METHOD)} {convert_empty(end$msg)} {convert_empty(res$status)} {round(end$toc - end$tic, digits = getOption("digits", 5))}') # nolint
+  
+  log_info(sprintf('%s "%s" %s %s %s %s %s', 
+    convert_empty(req$REMOTE_ADDR),
+    convert_empty(req$HTTP_USER_AGENT),
+    convert_empty(req$HTTP_HOST),
+    convert_empty(req$REQUEST_METHOD),
+    convert_empty(end$msg),
+    convert_empty(res$status),
+    round(end$toc - end$tic, digits = getOption("digits", 5))
+  )) # nolint
 }

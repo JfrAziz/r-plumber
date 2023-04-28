@@ -19,7 +19,7 @@ RUN Rscript -e "install.packages('pak', repos = sprintf('https://r-lib.github.io
 RUN Rscript -e "pak::pkg_install('rstudio/plumber@main')"
 
 # install required R packages
-RUN Rscript -e "pak::pkg_install(c('logger','tictoc', 'fs', 'promises', 'future'))"
+RUN Rscript -e "pak::pkg_install(c('logger','tictoc', 'fs', 'promises', 'future', 'fastmap'))"
 
 # install testing packages
 RUN Rscript -e "pak::pkg_install(c('testthat', 'httr'))"

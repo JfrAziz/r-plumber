@@ -12,15 +12,15 @@ This repository is a boilerplate to setup a new project with R plumber. You can 
 | Dynamic Filter/Miiddleware |     ✅      | Add custom filter / middleware each mounted route from `routes` dir                                                                                                                                             |
 | Request Validation         |     ✅      | Simple validation mechanism to check incoming request from request body / params, such as required fields, check type (number, boolean, array), check the value in given array, etc.                            |
 | Docker                     |     ✅      | Simplifying apps with docker, for better development, deployment, dependencies management, and scaling                                                                                                          |
-| Parallel Processing        |   Not Yet   | R only run a request at a time, make it process in parallel with `promises` and `future` packages.                                                                                                              |
+| Parallel Processing        |     ✅      | R only run a request at a time, make it process in parallel with `promises` and `future` packages.                                                                                                              |
 | Testing                    |     ✅      | Testing for endpoints / routes and helper functions with `testthat` and `httr` packages, also use Docker and docker-compose for setting up automated testing. For running in CI / CD, an example also provided. |
 
 This template comes with built in Environment Variables that you can edit when running it.
 
-| ENV      |   Default   | Description                                                                                    |
-| -------- | :---------: | ---------------------------------------------------------------------------------------------- |
-| `HOST`   | `127.0.0.1` | Host to run Rplumber, use `0.0.0.0` when running it in Docker                                  |
-| `PORT`   |   `8000`    | Which port Rplumber will run                                                                   |
+| ENV       |   Default   | Description                                                                                    |
+| --------- | :---------: | ---------------------------------------------------------------------------------------------- |
+| `HOST`    | `127.0.0.1` | Host to run Rplumber, use `0.0.0.0` when running it in Docker                                  |
+| `PORT`    |   `8000`    | Which port Rplumber will run                                                                   |
 | `WORKERS` |     `3`     | Number of worker (Rsession) to run parallel processing in Rplumber (including the main worker) |
 
 ## How to use it
