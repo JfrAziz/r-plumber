@@ -85,42 +85,11 @@ We validate the request using custom function from [`helpers/validator.R`](./hel
 
 ### Parallel Processing
 
-Parallel processing in Rplumber use `future` and `promises` packages, that package will process incoming request in another Rsession called worker.
+Parallel processing in Rplumber use `future` and `promises` packages, that package will process incoming request in another Rsession called worker. Or if your have enough resources you can run multi container in kubernetes clusters or docker swarms and put load balancer on top of it, to distribute incoming traffict.
 
-```mermaid
-%%{init: {'theme': 'base', 'themeVariables': { 'fontSize': '10px', 'fontFamily': 'Mono'}}}%%
+![Parallel](./docs/parallel.excalidraw.svg)
 
-graph LR
-
-subgraph bi[ ]
-    B[Request]
-end
-
-subgraph vpc[Docker]
-    subgraph 1[R Plumber API]
-            MAIN -.-> WORKER1
-            MAIN -.-> WORKER2
-            MAIN -.-> WORKER3
-        subgraph inside[R Plumber Session]
-            MAIN[Main Worker]
-            B --> MAIN
-        end
-
-        subgraph parallel[Parallel]
-            WORKER1(Worker 1)
-            WORKER2(Worker 2)
-            WORKER3(Worker 3)
-        end
-    end
-end
-
-linkStyle 0 stroke:#555,stroke-width:0.5px
-linkStyle 1 stroke:#555,stroke-width:0.5px
-linkStyle 2 stroke:#555,stroke-width:0.5px
-linkStyle 3 stroke:#555,stroke-width:0.5px
-```
-
-Use this method for long process endpoints that takes too much time, so the API can continue processing incoming requests even while working on others. You can add to any endpoint like this
+Worker only created in one containers, and to use workers add total workers in your env variables and use this method for long process endpoints that takes too much time, so the API can continue processing incoming requests even while working on others. You can add to any endpoint like this
 
 ```r
 # routes/task.R
@@ -151,9 +120,17 @@ Some of the examples of test case can be found in the form of `test-*.R` files i
 
 ## Deploy
 
-Deploying docker images it’s easy, you can deploy it like other images in Kubernetes, Docker Swarm, Cloud in GCP / AWS, or a VPS. If you wanna check this boilerplate, you can deploy to Railway by clicking this button below, just for example.
+Deploying docker images it’s easy, you can deploy it like other images in Kubernetes, Docker Swarm, Cloud in GCP / AWS, or a VPS.
 
-[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/template/Sjd0PA?referralCode=O5j9Uf)
+## Resources
+
+I have blog post about this projects, check it out
+
+- [Project Setup, Logging, and Error Handling](https://jafaraziz.com/blog/rest-api-with-r-part-1/)
+- [Routing and Request Validation](https://jafaraziz.com/blog/rest-api-with-r-part-2/)
+- [Deploy with Docker](https://jafaraziz.com/blog/rest-api-with-r-part-3/)
+- [Testing and CI / CD](https://jafaraziz.com/blog/rest-api-with-r-part-4/)
+- [Parallel Processing and Performance](https://jafaraziz.com/blog/rest-api-with-r-part-5/)
 
 ## Last...
 
